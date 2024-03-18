@@ -20,7 +20,7 @@ class IsTeacherUserPermission(BasePermission):
         return False
     
 
-
+# this is student permission class
 
 class IsStudentUserPermission(BasePermission):
     def has_permission(self, request, view):
