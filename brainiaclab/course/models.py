@@ -49,7 +49,7 @@ class Attendance(models.Model):
     topic = models.CharField(null=True,max_length=250)
 
     def __str__(self):
-        return f"{self.student.name}-{self.batch}"
+        return f"{self.student.full_name}-{self.batch}"
 
 
 

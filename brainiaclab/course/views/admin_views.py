@@ -471,6 +471,23 @@ class TeacherListView(APIView):
 
 
 
+class AttendanceView(APIView):
+    def post(self,request):
+        post_data = request.data
+        batch_id = post_data.get('batch')
+
+        distinct_dates = Attendance.objects.filter(batch=batch_id).values_list('created_at', flat=True).distinct()
+
+        res_data = []
+
+        for date in distinct_dates:
+            # Filter Attendance objects for each date
+            attendance_objects = Attendance.objects.filter(batch=batch_id, created_at=date)
+            serializer = AttendanceSerializer(attendance_objects, many=True)
+            res_data.append(serializer.data)
+
+        return Response(res_data, status=status.HTTP_200_OK)
+
 
 
 

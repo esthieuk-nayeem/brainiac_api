@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from ..models import *
+from authentication.models import User
+
 
 class DashboardSerializer(serializers.Serializer):
         total_active_course = serializers.IntegerField()
@@ -59,4 +61,19 @@ class MonthSerializer(serializers.ModelSerializer):
           fields = '__all__'
 
 
+class SubBatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Batch
+        fields = ['id','batch_name']
 
+
+class SubUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','full_name','phone']
+class AttendanceSerializer(serializers.ModelSerializer):
+    student = SubUserSerializer()
+    batch = SubBatchSerializer()
+    class Meta:
+        model = Attendance
+        fields = ['id','student','present','batch','created_at','topic']

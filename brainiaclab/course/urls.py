@@ -10,6 +10,7 @@ urlpatterns = [
     path('months/',MonthView.as_view()),
     path('addStudenttobatch/',AddStudentToBatch.as_view()),
     path('addTeachertobatch/',AddTeacherToBatch.as_view()),
+    path('attendance/', AttendanceView.as_view()),
 
     # path('admin_take_attendance/<int:batch_id>/', Admin_take_attendance, name='admin_take_attendance'),
     # path('admin_view_attendance/<int:batch_id>/', Admin_view_attendance, name='admin_view_attendance'),
