@@ -5,8 +5,13 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
 
+from rest_framework.authtoken.admin import TokenAdmin
+
+TokenAdmin.search_fields = ['user__username']
+
+User = get_user_model()
+search_fields = ('email',)
 # class CustomUserAdmin(UserAdmin):
     # list_display = ('phone','email', 'is_varified', 'is_staff', 'is_superuser','is_active')
     # list_filter = ('is_varified', 'is_staff', 'is_superuser')

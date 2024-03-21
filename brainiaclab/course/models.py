@@ -1,6 +1,6 @@
 from django.db import models
-from authentication.models import User
 
+from authentication.models import User
 
 
 class Day(models.Model):
@@ -30,7 +30,7 @@ class Course(models.Model):
     
 
 class Batch(models.Model):
-    batch_name = models.CharField(max_length=200)
+    batch_name = models.CharField(max_length=200,unique=True)
     month = models.ForeignKey(Month, on_delete= models.CASCADE, null = True)
     assigned_course = models.ForeignKey(Course, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)

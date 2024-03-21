@@ -15,14 +15,15 @@ class DashboardSerializer(serializers.Serializer):
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = '__all__'
+        fields = ['id', 'course_name', 'month']
 
 
 
 class BatchSerializer(serializers.ModelSerializer):
+    assigned_course = CourseSerializer()
     class Meta:
         model = Batch
-        fields = '__all__'
+        fields = ['assigned_course','id','batch_name','month','created_at','active']
 
 
 
@@ -32,10 +33,11 @@ class UserSerializer(serializers.ModelSerializer):
           fields = '__all__'
 
 
-class EnrolledStudentSerializer(serializers.ModelSerializer):
+class SubUserSerializer(serializers.ModelSerializer):
      class Meta:
           model = User
-          fields = ['full_name','phone']
+          fields = ['id','full_name','phone']
+
 
 
 class FeeSerializer(serializers.ModelSerializer):

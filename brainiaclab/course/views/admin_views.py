@@ -14,7 +14,6 @@ from rest_framework.response import Response
 from ..serializers.serializers import DashboardSerializer, BatchSerializer
 from ..models import Batch, StudentFee
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 
@@ -130,20 +129,21 @@ class BatchView(APIView):
         for i in range(len(batch_data)):
 
             try:
-                t_assigned = User.objects.get(t_assigned_batches = batch_data[i]['id'])
-                t_data = [
-                    {
-                            "id": t_assigned.id,
-                            "name":t_assigned.full_name,
-                            "phone": t_assigned.phone, 
-                    }
-                ] 
-            except:
+                t_assigned = User.objects.filter(t_assigned_batches=batch_data[i]['id'])
+                t_assigned_serializer = SubUserSerializer(t_assigned, many=True)
+                t_data = t_assigned_serializer.data
+
+                print(s_data)
+            except ObjectDoesNotExist:
                 t_data = []
+                print("No users found for the batch.")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
 
             try:
                 s_enrolled = User.objects.filter(s_enrolled_batches=batch_data[i]['id'])
-                s_enrolled_serializer = EnrolledStudentSerializer(s_enrolled, many=True)
+                s_enrolled_serializer = SubUserSerializer(s_enrolled, many=True)
                 s_data = s_enrolled_serializer.data
 
                 print(s_data)
@@ -199,7 +199,10 @@ class BatchView(APIView):
 
 
 
-            i_data = {"batch_name": batch_data[i]['batch_name'],
+            i_data = {
+                "batch_id":batch_data[i]['id'],
+                "batch_name": batch_data[i]['batch_name'],
+                "assigned_course":batch_data[i]['assigned_course'],
                     "created_at": batch_data[i]['created_at'],
                     "active": batch_data[i]['active'],
                     "month": batch[i].month.month_name,
