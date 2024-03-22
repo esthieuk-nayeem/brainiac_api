@@ -126,13 +126,11 @@ class LoginSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length = 255, min_length=3, read_only = True)
     tokens = serializers.CharField(max_length = 255, min_length=3, read_only = True)
     token = serializers.CharField(max_length = 255, min_length=3, read_only = True)
-   
-
-
+    group = serializers.CharField(max_length=255, read_only=True)  # Add this line
 
     class Meta:
         model = User
-        fields = ["phone", "password",'username','tokens','token']
+        fields = ["phone", "password",'username','tokens','token','full_name','group']
 
 
     def validate(self, attrs):
@@ -152,6 +150,8 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed("Account Disabled, Contact Admin!")
 
         token = Token.objects.get(user=_user)
+        group = Group.objects.filter(user=user)
+        print(group[0].name)
         print(token)
 
         return {
@@ -159,7 +159,10 @@ class LoginSerializer(serializers.ModelSerializer):
             'phone' : user.phone,
             'username': user.username,
             'tokens' : user.tokens(),
-            'token': token.key
+            'token': token.key,
+            'full_name': user.full_name,
+            'group': group[0].name,
+
         }
 
       
