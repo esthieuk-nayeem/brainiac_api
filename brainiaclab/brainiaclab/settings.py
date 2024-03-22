@@ -48,30 +48,17 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_yasg', 
     'rest_framework.authtoken',
-    'corsheaders',
+    'corsheaders'
 ]
 
 # settings.py
 
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:8000",
-]
-
-
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-
-# Allow specific headers in the CORS requests
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:33109',
 ]
+
 
 
 
