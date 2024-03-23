@@ -72,7 +72,7 @@ class CourseView(APIView):
 
                 response.append(c_data)
 
-            logger.info('Course data retrieved successfully.')
+            logger.info(f'{datetime.datetime.now()} -- COURSE -- Course data retrieved successfully.')
             return Response(response, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -151,7 +151,7 @@ class BatchView(APIView):
                     s_enrolled = User.objects.filter(s_enrolled_batches=batch_data[i]['id'])
                     s_enrolled_serializer = SubUserSerializer(s_enrolled, many=True)
                     s_data = s_enrolled_serializer.data
-                    logger.info('users found in batch successfully!')
+                    logger.info(f'{datetime.datetime.now()}users found in batch successfully!')
 
                     print(s_data)
                 except ObjectDoesNotExist:
@@ -180,7 +180,7 @@ class BatchView(APIView):
                             }
 
                         fee_data.append(_data)
-                        logger.info(f"Student fees fetched successfully for batch.")
+                        logger.info(f"{datetime.datetime.now()}Student fees fetched successfully for batch.")
 
 
                 except:
@@ -204,12 +204,12 @@ class BatchView(APIView):
                             }
 
                         payment_data.append(_data)
-                        logger.info(f"Teacher payments fetched successfully for batch.")
+                        logger.info(f"{datetime.datetime.now()}Teacher payments fetched successfully for batch.")
 
 
 
                 except:
-                    logger.error(f"An error occurred while fetching teacher payments: {e}")
+                    logger.error(f"{datetime.datetime.now()}An error occurred while fetching teacher payments: {e}")
                     payment_data = []
 
 
@@ -231,7 +231,7 @@ class BatchView(APIView):
 
                         }
                 response.append(i_data)
-            logger.info('Batch data retrieved successfully.')
+            logger.info(f'{datetime.datetime.now()}Batch data retrieved successfully.')
             return Response(response, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -256,7 +256,7 @@ class BatchView(APIView):
             logger.error(f'{datetime.datetime.now()} -- An error occurred while processing batch creation: {e}')
             return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        
+
     def put(self, request):
         data = request.data
 
