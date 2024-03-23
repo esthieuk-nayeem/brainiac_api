@@ -28,6 +28,12 @@ class BatchSerializer(serializers.ModelSerializer):
         fields = ['assigned_course','id','batch_name','month','created_at','active']
 
 
+class PostBatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Batch
+        fields = ['batch_name','assigned_course','month']
+
+
 
 class UserSerializer(serializers.ModelSerializer):
      class Meta:

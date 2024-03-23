@@ -241,7 +241,7 @@ class BatchView(APIView):
     def post(self, request):
         try:
             post_data = request.data
-            serializer = BatchSerializer(data=post_data)
+            serializer = PostBatchSerializer(data=post_data)
 
             if serializer.is_valid():
                 serializer.save()
