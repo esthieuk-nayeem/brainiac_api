@@ -17,6 +17,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 import logging
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -238,17 +239,24 @@ class BatchView(APIView):
             return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
-        post_data = request.data
-        serializer = BatchSerializer(data=post_data)
+        try:
+            post_data = request.data
+            serializer = BatchSerializer(data=post_data)
 
-        if serializer.is_valid():
-            serializer.save()
-            data = serializer.data
-            return Response(data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if serializer.is_valid():
+                serializer.save()
+                data = serializer.data
+                logger.info(f'{datetime.datetime.now()} -- New Batch created successfully!')
+                return Response(data, status=status.HTTP_201_CREATED)
+            else:
+                logger.info(f'{datetime.datetime.now()} -- Could not create a batch. Validation failed.')
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        except Exception as e:
+            logger.error(f'{datetime.datetime.now()} -- An error occurred while processing batch creation: {e}')
+            return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        
     def put(self, request):
         data = request.data
 
