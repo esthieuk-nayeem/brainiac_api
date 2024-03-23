@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import datetime
 import os
 from pathlib import Path
+import logging
+from logging.handlers import TimedRotatingFileHandler
+from logging.config import dictConfig
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -103,6 +106,34 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/django.log',  # Base log file path
+            'when': 'midnight',  # Rotate log file at midnight
+            'interval': 1,  # Rotate daily
+            'backupCount': 7,  # Keep 7 days worth of logs
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+dictConfig(LOGGING)
+
+
 
 
 SWAGGER_SETTINGS = {

@@ -16,7 +16,9 @@ from ..models import Batch, StudentFee
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
+import logging
 
+logger = logging.getLogger(__name__)
 
 # @swagger_auto_schema(
 #     security=[{"Bearer": []}]
@@ -46,34 +48,35 @@ class DashboardView(APIView):
         data = serializer.data
         return Response(data)
 
-
-
 class CourseView(APIView):
     def get(self, request):
+        try:
+            # Course calculation
+            courses = Course.objects.all()
+            serializer = CourseSerializer(courses, many=True)
+            course_data = serializer.data
+            response = []
 
-        # Course  calculation 
-        courses = Course.objects.all()
-        serializer = CourseSerializer(courses, many=True)
-        course_data = serializer.data
-        response = []
-
-        for i in range(len(course_data)):
-
-                t_batch= Batch.objects.filter(assigned_course = courses[i].id).count()
+            for i in range(len(course_data)):
+                t_batch = Batch.objects.filter(assigned_course=courses[i].id).count()
                 t_month = courses[i].month.count()
                 print(t_month)
 
-                c_data =  {
-                            "id": courses[i].id,
-                            "name":courses[i].course_name,
-                            "t_batches": t_batch,
-                            "t_month": t_month
-                         
-                        }
+                c_data = {
+                    "id": courses[i].id,
+                    "name": courses[i].course_name,
+                    "t_batches": t_batch,
+                    "t_month": t_month
+                }
 
                 response.append(c_data)
-                
-        return Response(response, status=status.HTTP_200_OK)
+
+            logger.info('Course data retrieved successfully.')
+            return Response(response, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f'An error occurred: {str(e)}')
+            return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -119,106 +122,120 @@ class CourseView(APIView):
 class BatchView(APIView):
 
     def get(self, request):
-        batch = Batch.objects.all()
+        try:
+            batch = Batch.objects.all()
 
-        serializer = BatchSerializer(batch,many=True)
-        batch_data = serializer.data
+            serializer = BatchSerializer(batch,many=True)
+            batch_data = serializer.data
 
-        response = []
+            response = []
 
-        for i in range(len(batch_data)):
+            for i in range(len(batch_data)):
 
-            try:
-                t_assigned = User.objects.filter(t_assigned_batches=batch_data[i]['id'])
-                t_assigned_serializer = SubUserSerializer(t_assigned, many=True)
-                t_data = t_assigned_serializer.data
+                try:
+                    t_assigned = User.objects.filter(t_assigned_batches=batch_data[i]['id'])
+                    t_assigned_serializer = SubUserSerializer(t_assigned, many=True)
+                    t_data = t_assigned_serializer.data
 
-                print(s_data)
-            except ObjectDoesNotExist:
-                t_data = []
-                print("No users found for the batch.")
-            except Exception as e:
-                print(f"An error occurred: {e}")
+                    print(s_data)
+                except ObjectDoesNotExist:
+                    t_data = []
+                    print("No users found for the batch.")
+                except Exception as e:
+                    logger.error(f"An error occurred while fetching student enrollments: {e}")
+                    print(f"An error occurred: {e}")
 
 
-            try:
-                s_enrolled = User.objects.filter(s_enrolled_batches=batch_data[i]['id'])
-                s_enrolled_serializer = SubUserSerializer(s_enrolled, many=True)
-                s_data = s_enrolled_serializer.data
+                try:
+                    s_enrolled = User.objects.filter(s_enrolled_batches=batch_data[i]['id'])
+                    s_enrolled_serializer = SubUserSerializer(s_enrolled, many=True)
+                    s_data = s_enrolled_serializer.data
+                    logger.info('users found in batch successfully!')
 
-                print(s_data)
-            except ObjectDoesNotExist:
-                s_data = []
-                print("No users found for the batch.")
-            except Exception as e:
-                print(f"An error occurred: {e}")
+                    print(s_data)
+                except ObjectDoesNotExist:
+                    s_data = []
+                    logger.warning(f"No users found for the batch with id {batch.id}.")
 
-            try:
-                total_fee = []
-                fee_data = []
-                s_fees = StudentFee.objects.filter(batch= batch_data[i]['id'])
-                for fee in s_fees:
+                    print("No users found for the batch.")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
 
-                    if fee.fee_status == "Paid":
-                        total_fee.append(fee.amount)
+                try:
+                    total_fee = []
+                    fee_data = []
+                    s_fees = StudentFee.objects.filter(batch= batch_data[i]['id'])
+                    for fee in s_fees:
 
-                        
-                    _data = {
-                            "student_name": fee.student.full_name,
-                            "month":fee.month.month_name,
-                            "amount":fee.amount,
-                            "fee_status":fee.fee_status
+                        if fee.fee_status == "Paid":
+                            total_fee.append(fee.amount)
+
+
+                        _data = {
+                                "student_name": fee.student.full_name,
+                                "month":fee.month.month_name,
+                                "amount":fee.amount,
+                                "fee_status":fee.fee_status
+                            }
+
+                        fee_data.append(_data)
+                        logger.info(f"Student fees fetched successfully for batch.")
+
+
+                except:
+                    logger.error(f"An error occurred while fetching student fees")
+                    fee_data = []
+
+                try:
+                    total_payment = []
+                    payment_data = []
+                    t_payment = Payment.objects.filter(batch= batch_data[i]['id'])
+                    for payment in t_payment:
+
+                        if payment.payment_status == "Paid":
+                            total_payment.append(payment.amount)
+
+                        _data = {
+                                "teacher_name": payment.user.full_name,
+                                "month":payment.month.month_name,
+                                "amount":payment.amount,
+                                "fee_status":payment.payment_status
+                            }
+
+                        payment_data.append(_data)
+                        logger.info(f"Teacher payments fetched successfully for batch.")
+
+
+
+                except:
+                    logger.error(f"An error occurred while fetching teacher payments: {e}")
+                    payment_data = []
+
+
+
+                i_data = {
+                    "batch_id":batch_data[i]['id'],
+                    "batch_name": batch_data[i]['batch_name'],
+                    "assigned_course":batch_data[i]['assigned_course'],
+                        "created_at": batch_data[i]['created_at'],
+                        "active": batch_data[i]['active'],
+                        "month": batch[i].month.month_name,
+                        "t_assigned": t_data,
+                        "s_enrolled": s_data,
+                        "s_fee": fee_data,
+                        "t_payment": payment_data,
+                        "total_payment":sum(total_payment),
+                        "total_fee":sum(total_fee),
+                        "profit_loss": sum(total_fee) - sum(total_payment)
+
                         }
-                    
-                    fee_data.append(_data)
-                    
-            except:
-                fee_data = []
-            
-            try:
-                total_payment = []
-                payment_data = []
-                t_payment = Payment.objects.filter(batch= batch_data[i]['id'])
-                for payment in t_payment:
+                response.append(i_data)
+            logger.info('Batch data retrieved successfully.')
+            return Response(response, status=status.HTTP_200_OK)
 
-                    if payment.payment_status == "Paid":
-                        total_payment.append(payment.amount)
-                        
-                    _data = {
-                            "teacher_name": payment.user.full_name,
-                            "month":payment.month.month_name,
-                            "amount":payment.amount,
-                            "fee_status":payment.payment_status
-                        }
-                    
-                    payment_data.append(_data)
-                    
-
-            except:
-                payment_data = []
-
-
-
-            i_data = {
-                "batch_id":batch_data[i]['id'],
-                "batch_name": batch_data[i]['batch_name'],
-                "assigned_course":batch_data[i]['assigned_course'],
-                    "created_at": batch_data[i]['created_at'],
-                    "active": batch_data[i]['active'],
-                    "month": batch[i].month.month_name,
-                    "t_assigned": t_data,
-                    "s_enrolled": s_data,
-                    "s_fee": fee_data,
-                    "t_payment": payment_data,
-                    "total_payment":sum(total_payment),
-                    "total_fee":sum(total_fee),
-                    "profit_loss": sum(total_fee) - sum(total_payment)
-                  
-                    }
-            response.append(i_data)
-
-        return Response(response, status=status.HTTP_200_OK)
-    
+        except Exception as e:
+            logger.error(f"An error occurred while processing batch data: {e}")
+            return Response({'error': 'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         post_data = request.data
