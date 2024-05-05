@@ -7,6 +7,8 @@ from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, Permi
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authtoken.models import Token
+from django.utils.translation import gettext_lazy as _
+
 
 
 
@@ -56,9 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     s_enrolled_batches = models.ManyToManyField('course.Batch', blank=True, related_name='s_enrolled_batches')
     s_fees = models.PositiveIntegerField(null=True,blank=True)
     s_status = models.BooleanField(default=True)
-    
-    
-   
+
     USERNAME_FIELD = 'phone'
     # REQUIRED_FIELDS = ['username']
 

@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
@@ -122,24 +123,33 @@ class RegisterSuperUser(serializers.ModelSerializer):
 
 class LoginSerializer(serializers.ModelSerializer):
     phone = serializers.CharField(max_length=255,min_length=3)
+    whatsapp = serializers.CharField(max_length=255, min_length=3,read_only = True)
+    email = serializers.CharField(max_length=255, min_length=3,read_only = True)
+    is_active = serializers.BooleanField(read_only = True)
     password = serializers.CharField(max_length = 68, min_length = 6,write_only=True)
-    username = serializers.CharField(max_length = 255, min_length=3, read_only = True)
-    tokens = serializers.CharField(max_length = 255, min_length=3, read_only = True)
     token = serializers.CharField(max_length = 255, min_length=3, read_only = True)
     group = serializers.CharField(max_length=255, read_only=True)  # Add this line
 
     class Meta:
         model = User
-        fields = ["phone", "password",'username','tokens','token','full_name','group']
+        fields = ["phone","whatsapp","email","is_active", "password",'token','full_name','group']
 
 
     def validate(self, attrs):
         phone = attrs.get('phone', '')
         password = attrs.get('password', '')
 
-        _user = User.objects.get(phone=phone)
-        
+
+
+        try:
+            _user = User.objects.get(phone=phone)
+        except ObjectDoesNotExist:
+            raise AuthenticationFailed("Phone does not exist!")
+
         user = auth.authenticate(phone=phone, password=password)
+
+        if user is None:
+            raise AuthenticationFailed("Invalid Credentials!")
 
         
 
@@ -155,13 +165,14 @@ class LoginSerializer(serializers.ModelSerializer):
         print(token)
 
         return {
-           
-            'phone' : user.phone,
-            'username': user.username,
-            'tokens' : user.tokens(),
-            'token': token.key,
             'full_name': user.full_name,
+            'phone' : user.phone,
+            'whatsapp': user.whatsapp_num,
+            'email': user.email,
+            'is_active': user.is_active,
+            'token': token.key,
             'group': group[0].name,
+
 
         }
 

@@ -83,3 +83,23 @@ class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = ['id','student','present','batch','created_at','topic']
+
+
+class AttendanceSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = '__all__'
+
+
+
+
+class PaymentSerilizer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
+
+
+class FeeSerilizer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentFee
+        fields = '__all__'

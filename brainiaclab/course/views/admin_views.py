@@ -173,6 +173,7 @@ class BatchView(APIView):
 
 
                         _data = {
+                                "id":fee.id,
                                 "student_name": fee.student.full_name,
                                 "month":fee.month.month_name,
                                 "amount":fee.amount,
@@ -197,6 +198,7 @@ class BatchView(APIView):
                             total_payment.append(payment.amount)
 
                         _data = {
+                                "id": payment.id,
                                 "teacher_name": payment.user.full_name,
                                 "month":payment.month.month_name,
                                 "amount":payment.amount,
@@ -220,7 +222,10 @@ class BatchView(APIView):
                     "assigned_course":batch_data[i]['assigned_course'],
                         "created_at": batch_data[i]['created_at'],
                         "active": batch_data[i]['active'],
-                        "month": batch[i].month.month_name,
+                        "month": [{
+                            "id": batch[i].month.id,
+                            "name":batch[i].month.month_name
+                                   }],
                         "t_assigned": t_data,
                         "s_enrolled": s_data,
                         "s_fee": fee_data,
@@ -512,6 +517,110 @@ class AttendanceView(APIView):
             res_data.append(serializer.data)
 
         return Response(res_data, status=status.HTTP_200_OK)
+
+
+
+
+
+class CreateAttendanceView(APIView):
+    def post(self, request):
+        serializer = AttendanceSerializer2(data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Attendance created successfully", status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        # Assuming you provide 'id' of the Attendance object to update
+        try:
+            attendance_id = request.data.get('id')
+            attendance = Attendance.objects.get(id=attendance_id)
+        except Attendance.DoesNotExist:
+            return Response("Attendance not found", status=status.HTTP_404_NOT_FOUND)
+
+        serializer = AttendanceSerializer2(attendance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Attendance updated successfully", status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class CreatePaymentView(APIView):
+    def post(self, request):
+        serializer = PaymentSerilizer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Payment created successfully", status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    def put(self, request):
+        # Assuming you provide 'id' of the Attendance object to update
+        try:
+            payment_id = request.data.get('id')
+            payment = Payment.objects.get(id=payment_id)
+        except Payment.DoesNotExist:
+            return Response("Payment not found", status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PaymentSerilizer(payment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Payment updated successfully", status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    def delete(self, request):
+        try:
+            payment_id = request.data.get('id')
+            payment = Payment.objects.get(id=payment_id)
+            payment.delete()
+            return Response("Payment deleted successfully", status=status.HTTP_204_NO_CONTENT)
+        except Payment.DoesNotExist:
+            return Response("Payment not found", status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+
+class FeesView(APIView):
+    def post(self, request):
+        serializer = FeeSerilizer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Student Fee created successfully", status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    def put(self, request):
+        # Assuming you provide 'id' of the Attendance object to update
+        try:
+            fee_id = request.data.get('id')
+            fee = StudentFee.objects.get(id=fee_id)
+        except StudentFee.DoesNotExist:
+            return Response("Student Fee not found", status=status.HTTP_404_NOT_FOUND)
+
+        serializer = FeeSerilizer(fee, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Student Fee updated successfully", status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+    def delete(self, request):
+        try:
+            fee_id = request.data.get('id')
+            fee = StudentFee.objects.get(id=fee_id)
+            fee.delete()
+            return Response("Student Fee deleted successfully", status=status.HTTP_204_NO_CONTENT)
+        except StudentFee.DoesNotExist:
+            return Response("Student Fee not found", status=status.HTTP_404_NOT_FOUND)
 
 
 

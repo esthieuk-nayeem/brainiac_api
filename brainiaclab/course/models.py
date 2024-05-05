@@ -56,6 +56,7 @@ class Attendance(models.Model):
 class StudentFee(models.Model):
     STATUS_CHOICES = [
         ('Not Ready', 'Not Ready'),
+        ('Left', 'Left'),
         ('Pending', 'Pending'),
         ('Paid', 'Paid'),
     ]
@@ -67,7 +68,7 @@ class StudentFee(models.Model):
     fee_status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default='Not Ready',
+        default='Pending',
     )
 
     def __str__(self):
@@ -77,6 +78,7 @@ class StudentFee(models.Model):
 class Payment(models.Model):
     STATUS_CHOICES = [
         ('Not Ready', 'Not Ready'),
+        ('Left', 'Left'),
         ('Pending', 'Pending'),
         ('Paid', 'Paid'),
     ]
@@ -88,7 +90,7 @@ class Payment(models.Model):
     payment_status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default='Not Ready',
+        default='Pending',
     )
 
     def __str__(self):

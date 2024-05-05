@@ -78,12 +78,16 @@ class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
-        user = request.data
-        serializer = self.serializer_class(data = user)
+        try:
+            user = request.data
+            serializer = self.serializer_class(data=user)
 
-        serializer.is_valid(raise_exception = True)
-        
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer.is_valid(raise_exception=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            # Handle the exception
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         
 
