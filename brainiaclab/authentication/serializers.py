@@ -104,7 +104,7 @@ class RegisterSuperUser(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email','username',"password","phone"]
+        fields = ["password","phone"]
 
     def validate(self, attrs):
 
