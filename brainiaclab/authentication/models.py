@@ -31,7 +31,7 @@ class UserManager(BaseUserManager):
         if password is None:
             raise TypeError("Password shouldn't be None")
 
-        user = self.create_user(phone, password)
+        user = self.create_user(phone, password, email='', whatsapp_num='')
         user.is_superuser = True
         user.is_varified = True
         user.is_staff = True
