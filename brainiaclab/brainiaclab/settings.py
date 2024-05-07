@@ -83,11 +83,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'brainiaclab.wsgi.application'
 
 
-# Database
+# Local Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
+# Prod Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'brainiac_api',
+        'USER': 'brainiac_admin',
+        'PASSWORD': 'Esthieuk_99',
+        'HOST': 'localhost',   # Or the IP address of your MySQL server
+        'PORT': '3306',        # Default MySQL port
     }
 }
 
