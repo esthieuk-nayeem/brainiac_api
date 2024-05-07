@@ -122,7 +122,9 @@ class RegisterSuperUser(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only = True)
     phone = serializers.CharField(max_length=255,min_length=3)
+    full_name= serializers.CharField(max_length=255, min_length=3,read_only = True)
     whatsapp = serializers.CharField(max_length=255, min_length=3,read_only = True)
     email = serializers.CharField(max_length=255, min_length=3,read_only = True)
     is_active = serializers.BooleanField(read_only = True)
@@ -132,7 +134,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["phone","whatsapp","email","is_active", "password",'token','full_name','group']
+        fields = ["id","phone","whatsapp","email","is_active", "password",'token','full_name','group']
 
 
     def validate(self, attrs):
@@ -165,6 +167,7 @@ class LoginSerializer(serializers.ModelSerializer):
         print(token)
 
         return {
+            'id':user.id,
             'full_name': user.full_name,
             'phone' : user.phone,
             'whatsapp': user.whatsapp_num,

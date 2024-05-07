@@ -1,5 +1,6 @@
 from django.urls import path
 from .views.admin_views import *
+from .views.teacher_views import TeacherBatchView
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view()),
@@ -14,6 +15,7 @@ urlpatterns = [
     path('create_attendance/', CreateAttendanceView.as_view()),
     path('payment/', CreatePaymentView.as_view()),
     path('fees/', FeesView.as_view()),
+    path('teacherbatch/', TeacherBatchView.as_view()),
 
     # path('admin_take_attendance/<int:batch_id>/', Admin_take_attendance, name='admin_take_attendance'),
     # path('admin_view_attendance/<int:batch_id>/', Admin_view_attendance, name='admin_view_attendance'),
