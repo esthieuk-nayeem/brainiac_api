@@ -8,10 +8,10 @@ from django.contrib.auth import get_user_model
 
 from rest_framework.authtoken.admin import TokenAdmin
 
-TokenAdmin.search_fields = ['user__username']
+# TokenAdmin.search_fields = ['user__username']
 
 User = get_user_model()
-search_fields = ('email',)
+# search_fields = ('email',)
 # class CustomUserAdmin(UserAdmin):
     # list_display = ('phone','email', 'is_varified', 'is_staff', 'is_superuser','is_active')
     # list_filter = ('is_varified', 'is_staff', 'is_superuser')
@@ -29,14 +29,7 @@ search_fields = ('email',)
     # ordering = ('email',)
     # filter_horizontal = ()
 
-from django.contrib import admin
-from rest_framework.authtoken.models import Token
 
-class TokenAdmin(admin.ModelAdmin):
-    search_fields = ('key', 'user__username')  # Define the search fields here
-
-# Register the Token model with the TokenAdmin
-admin.site.register(Token, TokenAdmin)
 
 
 admin.site.register(User)
