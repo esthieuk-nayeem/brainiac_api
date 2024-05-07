@@ -29,5 +29,14 @@ search_fields = ('email',)
     # ordering = ('email',)
     # filter_horizontal = ()
 
+from django.contrib import admin
+from rest_framework.authtoken.models import Token
+
+class TokenAdmin(admin.ModelAdmin):
+    search_fields = ('key', 'user__username')  # Define the search fields here
+
+# Register the Token model with the TokenAdmin
+admin.site.register(Token, TokenAdmin)
+
 
 admin.site.register(User)
