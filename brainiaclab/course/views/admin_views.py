@@ -33,8 +33,8 @@ class DashboardView(APIView):
         try:
             total_course = Course.objects.all().count()
             total_batch = Batch.objects.filter(active=True).count()
-            total_student = User.objects.filter(groups=1).count()
-            total_teacher = User.objects.filter(groups=2).count()
+            total_student = User.objects.filter(groups=2).count()
+            total_teacher = User.objects.filter(groups=3).count()
             student_fee = StudentFee.objects.filter(fee_status="Pending").count()
             teacher_payment = Payment.objects.filter(payment_status="Pending").count()
 
@@ -376,7 +376,7 @@ class StudentListView(APIView):
 
     def get(self, request):
         
-        students = User.objects.filter(groups__id=1)
+        students = User.objects.filter(groups__id=2)
         query = request.query_params.get('search', None)
         if query is not None:
             students = students.filter(phone__icontains=query) | students.filter(full_name__icontains=query)
@@ -447,7 +447,7 @@ class TeacherListView(APIView):
 
     def get(self, request):
         
-        teacher = User.objects.filter(groups__id=2)
+        teacher = User.objects.filter(groups__id=3)
         query = request.query_params.get('search', None)
         if query is not None:
             teacher = teacher.filter(phone__icontains=query) | teacher.filter(full_name__icontains=query)
