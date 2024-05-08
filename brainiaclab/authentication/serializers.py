@@ -111,7 +111,7 @@ class RegisterSuperUser(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        admin_group = Group.objects.get_or_create(name="admin")
+        admin_group, created = Group.objects.get_or_create(name='admin')
         print(admin_group)
         user = User.objects.create_superuser(**validated_data)
 
