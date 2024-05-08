@@ -24,30 +24,35 @@ logger = logging.getLogger(__name__)
 # @swagger_auto_schema(
 #     security=[{"Bearer": []}]
 # )
+
 class DashboardView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUserPermission]
+
     def get(self, request):
-        total_course = Course.objects.all().count()
-        total_batch = Batch.objects.filter(active=True).count()
-        total_student = User.objects.filter(groups=1).count()
-        total_teacher = User.objects.filter(groups=2).count()
-        student_fee = StudentFee.objects.filter(fee_status="Pending").count()
-        teacher_payment = Payment.objects.filter(payment_status="Pending").count()
+        try:
+            total_course = Course.objects.all().count()
+            total_batch = Batch.objects.filter(active=True).count()
+            total_student = User.objects.filter(groups=1).count()
+            total_teacher = User.objects.filter(groups=2).count()
+            student_fee = StudentFee.objects.filter(fee_status="Pending").count()
+            teacher_payment = Payment.objects.filter(payment_status="Pending").count()
 
-        context = {
-            'total_active_course': total_course,
-            'total_active_batch': total_batch,
-            'active_students': total_student,
-            'active_teachers': total_teacher,
-            'pending_student_fee': student_fee, 
-            'pending_payment': teacher_payment,
-            
-        }
+            context = {
+                'total_active_course': total_course,
+                'total_active_batch': total_batch,
+                'active_students': total_student,
+                'active_teachers': total_teacher,
+                'pending_student_fee': student_fee,
+                'pending_payment': teacher_payment,
+            }
 
-        serializer = DashboardSerializer(context)
-        data = serializer.data
-        return Response(data)
+            serializer = DashboardSerializer(context)
+            data = serializer.data
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            error_message = "An error occurred while fetching dashboard data: {}".format(str(e))
+            return Response({"error": error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class CourseView(APIView):
     def get(self, request):
