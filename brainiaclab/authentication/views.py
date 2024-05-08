@@ -33,8 +33,7 @@ class RegisterTeacherView(generics.GenericAPIView):
         user = request.data
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
-        teacher_group = Group.objects.get(name='teacher')
-        user_instance = serializer.save()        
+        serializer.save()
 
         user_data = serializer.data 
 
